@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MathHub — เรียนคณิตศาสตร์สนุกๆ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gradient: linear-gradient(135deg, #7c3aed 0%, #ec4899 50%, #f97316 100%);
+      --gradient-soft: linear-gradient(135deg, rgba(124,58,237,.12) 0%, rgba(236,72,153,.12) 50%, rgba(249,115,22,.12) 100%);
+      --purple: #7c3aed;
+      --pink: #ec4899;
+      --orange: #f97316;
+      --bg: #faf5ff;
+      --card: #ffffff;
+      --text: #1e1b4b;
+      --text-muted: #6b7280;
+      --shadow: 0 10px 40px rgba(124, 58, 237, 0.15);
+      --radius: 16px;
+      --nav-bg: rgba(255,255,255,.92);
+      --border: rgba(124,58,237,.1);
+      --input-bg: #fff;
+      --hint-bg: #fffbeb;
+      --hint-border: #fde68a;
+      --hint-text: #92400e;
+      --tech-bg: #f9fafb;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f0a1a;
+      --card: #1a1230;
+      --text: #f3f0ff;
+      --text-muted: #a89ec4;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      --gradient-soft: linear-gradient(135deg, rgba(124,58,237,.2) 0%, rgba(236,72,153,.15) 50%, rgba(249,115,22,.12) 100%);
+      --nav-bg: rgba(15,10,26,.95);
+      --border: rgba(167,139,250,.15);
+      --input-bg: #251a3d;
+      --hint-bg: #2d2008;
+      --hint-border: #854d0e;
+      --hint-text: #fde68a;
+      --tech-bg: #120d22;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Kanit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: box-shadow .3s;
+    }
+    .navbar.scrolled { box-shadow: var(--shadow); }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: .75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: .25rem;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text);
+      padding: .4rem .85rem;
+      border-radius: 999px;
+      font-weight: 500;
+      font-size: .9rem;
+      transition: all .25s;
+    }
+    .nav-links a:hover {
+      background: var(--gradient-soft);
+      color: var(--purple);
+    }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--purple);
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .theme-toggle {
+      background: var(--gradient-soft);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: .4rem .75rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all .25s;
+      line-height: 1;
+    }
+    .theme-toggle:hover { transform: scale(1.08); }
+
+    /* Scroll fade-in */
+    .fade-section {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .fade-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Search */
+    .search-wrap {
+      max-width: 480px;
+      margin: 0 auto 2rem;
+      position: relative;
+    }
+    .search-wrap input {
+      width: 100%;
+      padding: .85rem 1.25rem .85rem 2.75rem;
+      border: 2px solid var(--border);
+      border-radius: 999px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 1rem;
+      background: var(--input-bg);
+      color: var(--text);
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .search-wrap input:focus {
+      outline: none;
+      border-color: var(--purple);
+      box-shadow: 0 0 0 4px rgba(124,58,237,.15);
+    }
+    .search-wrap .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      pointer-events: none;
+    }
+    .search-empty {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 2rem;
+      display: none;
+    }
+    .search-empty.show { display: block; }
+    .formula-card.hidden { display: none; }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 1.5rem 4rem;
+      background: var(--gradient);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: rgba(255,255,255,.08);
+      border-radius: 50%;
+      top: -200px; right: -150px;
+      animation: float 8s ease-in-out infinite;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: rgba(255,255,255,.06);
+      border-radius: 50%;
+      bottom: -100px; left: -100px;
+      animation: float 10s ease-in-out infinite reverse;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-30px) scale(1.05); }
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 700px;
+      animation: fadeInUp 1s ease;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 1rem;
+      text-shadow: 0 4px 20px rgba(0,0,0,.15);
+    }
+    .hero p {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: rgba(255,255,255,.92);
+      margin-bottom: 2rem;
+      font-weight: 300;
+    }
+    .btn {
+      display: inline-block;
+      padding: .85rem 2rem;
+      border-radius: 999px;
+      font-family: 'Kanit', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      transition: all .3s;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: #fff;
+      color: var(--purple);
+      box-shadow: 0 8px 30px rgba(0,0,0,.2);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 40px rgba(0,0,0,.25);
+    }
+    .btn-gradient {
+      background: var(--gradient);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(124,58,237,.3);
+    }
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(124,58,237,.4);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--purple);
+      border: 2px solid var(--purple);
+    }
+    .btn-outline:hover {
+      background: var(--purple);
+      color: #fff;
+    }
+
+    /* Sections */
+    section {
+      padding: 5rem 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-title {
+      text-align: center;
+      margin-bottom: 3rem;
+      animation: fadeInUp .8s ease;
+    }
+    .section-title h2 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: .5rem;
+    }
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    /* Formulas */
+    .formula-tabs {
+      display: flex;
+      gap: .5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .tab-btn {
+      padding: .6rem 1.25rem;
+      border: 2px solid transparent;
+      border-radius: 999px;
+      background: var(--card);
+      color: var(--text);
+      font-family: 'Kanit', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .3s;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    }
+    .tab-btn:hover, .tab-btn.active {
+      background: var(--gradient);
+      color: #fff;
+      border-color: transparent;
+      transform: translateY(-2px);
+    }
+    .formula-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+    .formula-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,.06);
+      transition: all .35s;
+      border: 1px solid rgba(124,58,237,.08);
+      animation: fadeInUp .6s ease both;
+    }
+    .formula-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow);
+      border-color: rgba(124,58,237,.2);
+    }
+    .formula-card h3 {
+      font-size: 1.1rem;
+      color: var(--purple);
+      margin-bottom: .75rem;
+    }
+    .formula-expr {
+      background: var(--gradient-soft);
+      padding: .75rem 1rem;
+      border-radius: 10px;
+      font-size: 1.05rem;
+      font-weight: 500;
+      margin-bottom: .75rem;
+      text-align: center;
+    }
+    .formula-example {
+      font-size: .9rem;
+      color: var(--text-muted);
+    }
+    .formula-example strong { color: var(--pink); }
+
+    /* Techniques */
+    .technique-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    .technique-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,.06);
+      transition: all .35s;
+      position: relative;
+      overflow: hidden;
+    }
+    .technique-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 4px; height: 100%;
+      background: var(--gradient);
+    }
+    .technique-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+    }
+    .technique-card .icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .technique-card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: var(--purple);
+    }
+    .technique-card ol {
+      padding-left: 1.25rem;
+      color: var(--text-muted);
+    }
+    .technique-card li {
+      margin-bottom: .5rem;
+      font-size: .95rem;
+    }
+
+    /* Quiz */
+    #quiz { max-width: 700px; }
+    .quiz-box {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: .75rem;
+    }
+    .quiz-stat {
+      background: var(--gradient-soft);
+      padding: .5rem 1rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: .95rem;
+    }
+    .quiz-stat span { color: var(--purple); }
+    .quiz-question {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .75rem;
+      margin-bottom: 1.5rem;
+    }
+    .quiz-option {
+      padding: 1rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      background: var(--card);
+      font-family: 'Kanit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .25s;
+    }
+    .quiz-option:hover:not(:disabled) {
+      border-color: var(--purple);
+      background: var(--gradient-soft);
+      transform: scale(1.02);
+    }
+    .quiz-option.correct {
+      border-color: #22c55e;
+      background: #dcfce7;
+      color: #166534;
+    }
+    .quiz-option.wrong {
+      border-color: #ef4444;
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .quiz-option:disabled { cursor: default; }
+    .quiz-feedback {
+      min-height: 2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+    }
+    .quiz-feedback.correct { color: #22c55e; }
+    .quiz-feedback.wrong { color: #ef4444; }
+    .quiz-progress {
+      height: 6px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .quiz-progress-bar {
+      height: 100%;
+      background: var(--gradient);
+      border-radius: 999px;
+      transition: width .4s ease;
+    }
+    .quiz-result {
+      display: none;
+      animation: fadeInUp .6s ease;
+    }
+    .quiz-result.show { display: block; }
+    .result-score {
+      font-size: 3rem;
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .result-detail {
+      color: var(--text-muted);
+      margin: 1rem 0 1.5rem;
+      font-size: 1.1rem;
+    }
+    .quiz-start { animation: fadeInUp .6s ease; }
+    .quiz-game { display: none; }
+    .quiz-game.active { display: block; }
+
+    /* Grades ม.1-ม.6 */
+    #grades { max-width: 1200px; }
+    .grade-tabs {
+      display: flex;
+      gap: .5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .grade-tab {
+      padding: .65rem 1.1rem;
+      border: 2px solid rgba(124,58,237,.15);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--text);
+      font-family: 'Kanit', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all .3s;
+      min-width: 64px;
+    }
+    .grade-tab:hover, .grade-tab.active {
+      background: var(--gradient);
+      color: #fff;
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(124,58,237,.3);
+    }
+    .grade-panel { display: none; animation: fadeInUp .5s ease; }
+    .grade-panel.active { display: block; }
+    .grade-header {
+      background: var(--gradient-soft);
+      border-radius: var(--radius);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .grade-header h3 {
+      font-size: 1.4rem;
+      color: var(--purple);
+      margin-bottom: .5rem;
+    }
+    .grade-header p { color: var(--text-muted); font-size: .95rem; }
+    .topic-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .topic-chip {
+      background: var(--card);
+      padding: .35rem .85rem;
+      border-radius: 999px;
+      font-size: .85rem;
+      color: var(--purple);
+      border: 1px solid rgba(124,58,237,.15);
+      font-weight: 500;
+    }
+    .grade-subtitle {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--purple);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .grade-formula-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+    .grade-formula-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,.06);
+      border: 1px solid rgba(124,58,237,.08);
+      transition: all .3s;
+    }
+    .grade-formula-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+    }
+    .grade-formula-card .grade-badge {
+      display: inline-block;
+      background: var(--gradient);
+      color: #fff;
+      font-size: .75rem;
+      padding: .2rem .6rem;
+      border-radius: 999px;
+      margin-bottom: .75rem;
+      font-weight: 600;
+    }
+    .grade-formula-card h4 {
+      font-size: 1.05rem;
+      color: var(--purple);
+      margin-bottom: .5rem;
+    }
+    .grade-formula-card .formula-expr { margin-bottom: 1rem; font-size: .95rem; }
+    .technique-steps {
+      background: var(--tech-bg);
+      border-radius: 10px;
+      padding: 1rem;
+      border-left: 3px solid var(--pink);
+    }
+    .technique-steps .tech-label {
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--pink);
+      margin-bottom: .5rem;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .technique-steps ol {
+      padding-left: 1.1rem;
+      color: var(--text-muted);
+      font-size: .88rem;
+    }
+    .technique-steps li { margin-bottom: .35rem; }
+    .grade-exam-wrap {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+    }
+    .grade-exam-wrap .exam-intro {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+    .grade-exam-start { text-align: center; }
+    .grade-exam-game { display: none; }
+    .grade-exam-game.active { display: block; }
+    .grade-exam-result { display: none; text-align: center; }
+    .grade-exam-result.show { display: block; animation: fadeInUp .5s ease; }
+    .exam-hint {
+      background: var(--hint-bg);
+      border: 1px solid var(--hint-border);
+      border-radius: 10px;
+      padding: .75rem 1rem;
+      font-size: .9rem;
+      color: var(--hint-text);
+      margin-top: .75rem;
+      text-align: left;
+    }
+    .exam-hint strong { color: var(--orange); }
+    .grade-select-row {
+      display: flex;
+      gap: .5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+    .grade-select-btn {
+      padding: .45rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: 999px;
+      background: var(--card);
+      font-family: 'Kanit', sans-serif;
+      font-size: .9rem;
+      cursor: pointer;
+      transition: all .25s;
+      color: var(--text);
+    }
+    .grade-select-btn:hover, .grade-select-btn.active {
+      background: var(--gradient);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    /* Calculator */
+    #calculator .calc-box { max-width: 420px; margin: 0 auto; }
+    .calc-box {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .calc-display {
+      background: var(--tech-bg);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: right;
+      font-size: 1.75rem;
+      font-weight: 600;
+      min-height: 3.5rem;
+      word-break: break-all;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: .5rem;
+    }
+    .calc-btn {
+      padding: .85rem .5rem;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .2s;
+      background: var(--tech-bg);
+      color: var(--text);
+    }
+    .calc-btn:hover { transform: scale(1.05); filter: brightness(1.05); }
+    .calc-btn.op { background: var(--gradient-soft); color: var(--purple); font-weight: 600; }
+    .calc-btn.fn { background: rgba(236,72,153,.12); color: var(--pink); font-size: .85rem; }
+    .calc-btn.eq { background: var(--gradient); color: #fff; grid-column: span 2; }
+    .calc-btn.clear { background: rgba(239,68,68,.12); color: #ef4444; }
+    .calc-hint {
+      text-align: center;
+      font-size: .8rem;
+      color: var(--text-muted);
+      margin-top: .75rem;
+    }
+
+    /* Speed Math 60s */
+    #speedmath .speed-box { max-width: 700px; margin: 0 auto; }
+    .speed-box {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .speed-timer {
+      font-size: 3rem;
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: .5rem;
+    }
+    .speed-timer.urgent {
+      background: linear-gradient(135deg, #ef4444, #f97316);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+    .leaderboard {
+      margin-top: 1.5rem;
+      text-align: left;
+      background: var(--tech-bg);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+    .leaderboard h4 {
+      color: var(--purple);
+      margin-bottom: .75rem;
+      font-size: 1rem;
+    }
+    .leaderboard ol {
+      padding-left: 1.25rem;
+      color: var(--text-muted);
+      font-size: .9rem;
+    }
+    .leaderboard li { margin-bottom: .35rem; }
+    .leaderboard li:first-child { color: var(--orange); font-weight: 600; }
+    .name-input {
+      padding: .6rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: 999px;
+      font-family: 'Kanit', sans-serif;
+      font-size: .95rem;
+      background: var(--input-bg);
+      color: var(--text);
+      margin: .75rem .5rem;
+      max-width: 180px;
+    }
+
+    /* Footer */
+    footer {
+      background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%);
+      color: #fff;
+      padding: 3rem 1.5rem 2rem;
+      text-align: center;
+    }
+    footer h3 {
+      font-size: 1.5rem;
+      margin-bottom: .5rem;
+    }
+    footer p {
+      color: rgba(255,255,255,.7);
+      margin-bottom: 1.5rem;
+    }
+    .share-buttons {
+      display: flex;
+      gap: .75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .65rem 1.25rem;
+      border-radius: 999px;
+      border: none;
+      font-family: 'Kanit', sans-serif;
+      font-weight: 500;
+      font-size: .9rem;
+      cursor: pointer;
+      color: #fff;
+      transition: all .3s;
+      text-decoration: none;
+    }
+    .share-btn:hover { transform: translateY(-3px); filter: brightness(1.1); }
+    .share-fb { background: #1877f2; }
+    .share-line { background: #06c755; }
+    .share-tw { background: #1da1f2; }
+    .share-copy { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); }
+    .url-box {
+      display: flex;
+      max-width: 500px;
+      margin: 0 auto 1.5rem;
+      gap: .5rem;
+    }
+    .url-box input {
+      flex: 1;
+      padding: .65rem 1rem;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Kanit', sans-serif;
+      font-size: .85rem;
+      background: rgba(255,255,255,.1);
+      color: #fff;
+    }
+    .url-box input::selection { background: var(--pink); }
+    .copyright {
+      font-size: .85rem;
+      color: rgba(255,255,255,.5);
+      margin-top: 1rem;
+    }
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1e1b4b;
+      color: #fff;
+      padding: .75rem 1.5rem;
+      border-radius: 999px;
+      font-weight: 500;
+      z-index: 9999;
+      transition: transform .4s ease;
+      box-shadow: 0 8px 30px rgba(0,0,0,.3);
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .menu-toggle { display: block; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%; left: 0; right: 0;
+        background: var(--nav-bg);
+        flex-direction: column;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        box-shadow: var(--shadow);
+      }
+      .nav-links.open { display: flex; }
+      .quiz-options { grid-template-columns: 1fr; }
+      .formula-grid { grid-template-columns: 1fr; }
+      .grade-formula-grid { grid-template-columns: 1fr; }
+      .grade-tab { min-width: 52px; padding: .5rem .75rem; font-size: .9rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="logo">📐 MathHub</a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#hero">หน้าแรก</a></li>
+        <li><a href="#grades">ม.1-ม.6</a></li>
+        <li><a href="#formulas">สูตร</a></li>
+        <li><a href="#quiz">ข้อสอบ</a></li>
+        <li><a href="#speedmath">Speed Math</a></li>
+        <li><a href="#calculator">เครื่องคิดเลข</a></li>
+        <li><a href="#footer">แชร์</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="สลับโหมดสี">🌙</button>
+        <button class="menu-toggle" id="menuToggle" aria-label="เปิดเมนู">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="hero">
+    <div class="hero-content">
+      <h1>📐 MathHub</h1>
+      <p>เรียนคณิตศาสตร์ ม.1–ม.6 ครบทุกระดับ — สูตร เทคนิคใช้สูตร และแบบทดสอบพร้อมเฉลย</p>
+      <a href="#grades" class="btn btn-primary">🚀 เริ่มเรียนเลย</a>
+    </div>
+  </section>
+
+  <!-- Formulas -->
+  <section id="formulas" class="fade-section">
+    <div class="section-title">
+      <h2>📚 หมวดสูตรคณิตศาสตร์</h2>
+      <p>สูตรสำคัญพร้อมตัวอย่างการใช้งาน — ค้นหาได้ทันที</p>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="formulaSearch" placeholder="ค้นหาสูตร... เช่น พีทากอรัส, อนุพันธ์, sin">
+    </div>
+    <div class="formula-tabs" id="formulaTabs"></div>
+    <div class="formula-grid" id="formulaGrid"></div>
+    <div class="search-empty" id="searchEmpty">ไม่พบสูตรที่ค้นหา ลองใช้คำอื่นดูนะ</div>
+  </section>
+
+  <!-- Grades ม.1-ม.6 -->
+  <section id="grades" class="fade-section">
+    <div class="section-title">
+      <h2>🎓 คณิตศาสตร์ ม.1 – ม.6</h2>
+      <p>สูตร เทคนิคการใช้สูตร และแบบทดสอบแยกตามระดับชั้น</p>
+    </div>
+    <div class="grade-tabs" id="gradeTabs"></div>
+    <div id="gradePanels"></div>
+  </section>
+
+  <!-- Techniques -->
+  <section id="techniques" class="fade-section">
+    <div class="section-title">
+      <h2>⚡ เทคนิคการคำนวณ</h2>
+      <p>คำนวณเร็วขึ้นด้วยเทคนิคง่ายๆ</p>
+    </div>
+    <div class="technique-list">
+      <div class="technique-card">
+        <div class="icon">✖️</div>
+        <h3>คูณเร็ว — คูณด้วย 11</h3>
+        <ol>
+          <li>เขียนตัวเลขสองหลัก เช่น 45</li>
+          <li>บวกหลักสิบกับหลักหน่วย: 4 + 5 = 9</li>
+          <li>ใส่ผลรวมตรงกลาง: <strong>4 | 9 | 5 = 495</strong></li>
+          <li>ถ้าผลรวม ≥ 10 ให้ทบหลักสิบ เช่น 67×11 → 6|(6+7=13→3 ทบ1)|7 = 737</li>
+        </ol>
+      </div>
+      <div class="technique-card">
+        <div class="icon">➗</div>
+        <h3>หารเร็ว — หารด้วย 5</h3>
+        <ol>
+          <li>คูณตัวตั้งหารด้วย 2 ก่อน เช่น 340 ÷ 5</li>
+          <li>340 × 2 = 680</li>
+          <li>หารผลลัพธ์ด้วย 10 (เลื่อนจุดทศนิยม): <strong>680 ÷ 10 = 68</strong></li>
+          <li>ใช้ได้กับทศนิยมด้วย เช่น 47.5 ÷ 5 = 95 ÷ 10 = 9.5</li>
+        </ol>
+      </div>
+      <div class="technique-card">
+        <div class="icon">🧠</div>
+        <h3>คิดเลขในใจ — บวกเลขสองหลัก</h3>
+        <ol>
+          <li>แยกเป็นหลักสิบและหลักหน่วย เช่น 38 + 47</li>
+          <li>บวกหลักสิบก่อน: 30 + 40 = 70</li>
+          <li>บวกหลักหน่วย: 8 + 7 = 15</li>
+          <li>รวมผล: <strong>70 + 15 = 85</strong></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quiz -->
+  <section id="quiz" class="fade-section">
+    <div class="section-title">
+      <h2>📝 แบบทดสอบ & เกม Quiz</h2>
+      <p>เลือกระดับชั้น หรือฝึกคำนวณเร็ว 10 ข้อ</p>
+    </div>
+    <div class="quiz-box">
+      <!-- Start Screen -->
+      <div class="quiz-start" id="quizStart">
+        <p style="color:var(--text-muted);margin-bottom:1rem;font-size:1.05rem;">
+          เลือกระดับชั้นแล้วทำข้อสอบ หรือเล่นเกมคำนวณเร็ว
+        </p>
+        <div class="grade-select-row" id="quizGradeSelect"></div>
+        <button class="btn btn-gradient" id="startQuizBtn" style="margin:.5rem">▶️ เริ่มทำข้อสอบ</button>
+        <button class="btn btn-outline" id="startSpeedBtn" style="margin:.5rem">⚡ เกมคำนวณเร็ว</button>
+      </div>
+
+      <!-- Game Screen -->
+      <div class="quiz-game" id="quizGame">
+        <div class="quiz-header">
+          <div class="quiz-stat">ข้อ <span id="qNum">1</span>/10</div>
+          <div class="quiz-stat">คะแนน <span id="qScore">0</span></div>
+          <div class="quiz-stat">⏱️ <span id="qTimer">0:00</span></div>
+        </div>
+        <div class="quiz-progress"><div class="quiz-progress-bar" id="qProgress" style="width:0%"></div></div>
+        <div class="quiz-question" id="qText">? + ? = ?</div>
+        <div class="quiz-options" id="qOptions"></div>
+        <div class="quiz-feedback" id="qFeedback"></div>
+        <button class="btn btn-gradient" id="nextBtn" style="display:none">ข้อถัดไป →</button>
+      </div>
+
+      <!-- Result Screen -->
+      <div class="quiz-result" id="quizResult">
+        <div class="result-score" id="resultScore">0/10</div>
+        <div class="result-detail" id="resultDetail"></div>
+        <button class="btn btn-gradient" id="restartBtn">🔄 เล่นใหม่</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Speed Math 60s -->
+  <section id="speedmath" class="fade-section">
+    <div class="section-title">
+      <h2>🏁 Speed Math — 60 วินาที</h2>
+      <p>ตอบให้ได้มากที่สุดใน 1 นาที แข่งกับสถิติของตัวเอง!</p>
+    </div>
+    <div class="speed-box">
+      <div id="speedStart">
+        <p style="color:var(--text-muted);margin-bottom:1.25rem;">โจทย์บวก ลบ คูณ หาร สุ่มใหม่ทุกข้อ — ตอบแล้วขึ้นข้อถัดไปทันที</p>
+        <button class="btn btn-gradient" id="speedStartBtn">🏁 เริ่ม Speed Math</button>
+        <div class="leaderboard" id="leaderboard">
+          <h4>🏆 Leaderboard</h4>
+          <ol id="leaderboardList"><li>ยังไม่มีสถิติ — ลองเล่นเลย!</li></ol>
+        </div>
+      </div>
+      <div id="speedGame" style="display:none">
+        <div class="speed-timer" id="speedCountdown">60</div>
+        <div class="quiz-stat" style="display:inline-block;margin-bottom:1rem">ถูก <span id="speedScore">0</span> ข้อ</div>
+        <div class="quiz-question" id="speedQ">?</div>
+        <div class="quiz-options" id="speedOpts"></div>
+      </div>
+      <div id="speedResult" style="display:none">
+        <div class="result-score" id="speedFinal">0</div>
+        <div class="result-detail" id="speedDetail"></div>
+        <input type="text" class="name-input" id="speedName" placeholder="ชื่อของคุณ" maxlength="12">
+        <button class="btn btn-gradient" id="speedSaveBtn">💾 บันทึกสถิติ</button>
+        <button class="btn btn-outline" id="speedRetryBtn" style="margin-left:.5rem">🔄 เล่นใหม่</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Calculator -->
+  <section id="calculator" class="fade-section">
+    <div class="section-title">
+      <h2>🔢 เครื่องคิดเลขวิทยาศาสตร์</h2>
+      <p>รองรับ sin, cos, tan, log, √, ยกกำลัง (^)</p>
+    </div>
+    <div class="calc-box">
+      <div class="calc-display" id="calcDisplay">0</div>
+      <div class="calc-grid" id="calcGrid"></div>
+      <p class="calc-hint">sin/cos/tan ใช้องศา (°) — ตัวอย่าง: sin(30) = 0.5</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <h3>📐 MathHub</h3>
+    <p>แชร์เว็บไซต์ให้เพื่อนๆ มาเรียนคณิตศาสตร์ด้วยกัน!</p>
+    <div class="url-box">
+      <input type="text" id="shareUrl" readonly>
+    </div>
+    <div class="share-buttons">
+      <a class="share-btn share-fb" id="shareFb" target="_blank" rel="noopener">📘 Facebook</a>
+      <a class="share-btn share-line" id="shareLine" target="_blank" rel="noopener">💬 LINE</a>
+      <a class="share-btn share-tw" id="shareTw" target="_blank" rel="noopener">🐦 Twitter</a>
+      <button class="share-btn share-copy" id="copyUrl">📋 คัดลอก URL</button>
+    </div>
+    <p class="copyright">© 2026 MathHub — เรียนคณิตศาสตร์สนุกๆ ทุกวัน</p>
+  </footer>
+
+  <div class="toast" id="toast">คัดลอก URL แล้ว!</div>
+
+  <script>
+    /* ─── Formula Data ─── */
+    const formulas = {
+      algebra: {
+        label: 'พีชคณิต',
+        items: [
+          { name: 'สมการกำลังสอง', expr: 'ax² + bx + c = 0', example: 'x = (-b ± √(b²-4ac)) / 2a เช่น x²-5x+6=0 → x=2 หรือ x=3' },
+          { name: 'ผลต่างกำลังสอง', expr: 'a² - b² = (a+b)(a-b)', example: '25 - 9 = (5+3)(5-3) = 8×4 = 32' },
+          { name: 'กำลังสองสามพจน์', expr: '(a+b)² = a²+2ab+b²', example: '(3+4)² = 9+24+16 = 49' },
+          { name: 'กำลังสามสามพจน์', expr: '(a+b)³ = a³+3a²b+3ab²+b³', example: '(2+1)³ = 8+12+6+1 = 27' },
+          { name: 'ลำดับเลขคณิต', expr: 'aₙ = a₁ + (n-1)d', example: '2, 5, 8, 11... d=3 → a₁₀ = 2+(9×3) = 29' },
+          { name: 'ลำดับเรขาคณิต', expr: 'aₙ = a₁ × rⁿ⁻¹', example: '3, 6, 12, 24... r=2 → a₅ = 3×2⁴ = 48' }
+        ]
+      },
+      geometry: {
+        label: 'เรขาคณิต',
+        items: [
+          { name: 'พื้นที่สามเหลี่ยม', expr: 'A = ½ × ฐาน × สูง', example: 'ฐาน 10 สูง 6 → A = ½×10×6 = 30 ตร.หน่วย' },
+          { name: 'พื้นที่วงกลม', expr: 'A = πr²', example: 'r = 7 → A = π×49 ≈ 153.94 ตร.หน่วย' },
+          { name: 'เส้นรอบวงกลม', expr: 'C = 2πr', example: 'r = 5 → C = 2π×5 ≈ 31.42 หน่วย' },
+          { name: 'พื้นที่สี่เหลี่ยม', expr: 'A = กว้าง × ยาว', example: '4 × 9 = 36 ตร.หน่วย' },
+          { name: 'ปริมาตรทรงกระบอก', expr: 'V = πr²h', example: 'r=3, h=10 → V = π×9×10 ≈ 282.74 ลบ.หน่วย' },
+          { name: 'ทฤษฎีพีทากอรัส', expr: 'a² + b² = c²', example: 'a=3, b=4 → c = √(9+16) = 5' }
+        ]
+      },
+      calculus: {
+        label: 'แคลคูลัส',
+        items: [
+          { name: 'อนุพันธ์กำลัง', expr: 'd/dx(xⁿ) = nxⁿ⁻¹', example: 'd/dx(x³) = 3x²' },
+          { name: 'อนุพันธ์คงที่', expr: 'd/dx(c) = 0', example: 'd/dx(5) = 0' },
+          { name: 'อนุพันธ์ผลรวม', expr: 'd/dx(f+g) = f\'+g\'', example: 'd/dx(x²+3x) = 2x+3' },
+          { name: 'อินทิกรัลกำลัง', expr: '∫xⁿ dx = xⁿ⁺¹/(n+1) + C', example: '∫x² dx = x³/3 + C' },
+          { name: 'กฎลูกโซ่', expr: 'd/dx[f(g(x))] = f\'(g)·g\'(x)', example: 'd/dx[(2x+1)³] = 3(2x+1)²·2' },
+          { name: 'อนุพันธ์ sin/cos', expr: 'd/dx(sin x)=cos x, d/dx(cos x)=-sin x', example: 'd/dx(sin 2x) = 2cos 2x' }
+        ]
+      },
+      trigonometry: {
+        label: 'ตรีโกณมิติ',
+        items: [
+          { name: 'sin, cos, tan', expr: 'sinθ = ด้านตรงข้ามมุมฉาก/ไฮโพเทนูส, cosθ = ด้านประชิดมุมฉาก/ไฮโพเทนูส, tanθ = sin/cos', example: 'sin30° = ½, cos60° = ½, tan45° = 1' },
+          { name: 'sin²+cos²', expr: 'sin²θ + cos²θ = 1', example: 'sin²30°+cos²30° = ¼+¾ = 1' },
+          { name: 'sin(A+B)', expr: 'sin(A+B) = sinA·cosB + cosA·sinB', example: 'sin(75°) = sin45°cos30°+cos45°sin30°' },
+          { name: 'cos(A+B)', expr: 'cos(A+B) = cosA·cosB - sinA·sinB', example: 'cos(60°) = cos(45°+15°)' },
+          { name: 'กฎไซน์', expr: 'a/sinA = b/sinB = c/sinC', example: 'ใช้หามุมหรือด้านในสามเหลี่ยม' },
+          { name: 'กฎโคไซน์', expr: 'c² = a²+b²-2ab·cosC', example: 'หาด้านที่ 3 เมื่อรู้ 2 ด้านและมุมระหว่าง' }
+        ]
+      }
+    };
+
+    /* ─── Render Formulas ─── */
+    let activeTab = 'algebra';
+    const tabsEl = document.getElementById('formulaTabs');
+    const gridEl = document.getElementById('formulaGrid');
+
+    Object.keys(formulas).forEach((key, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'tab-btn' + (i === 0 ? ' active' : '');
+      btn.textContent = formulas[key].label;
+      btn.dataset.tab = key;
+      btn.addEventListener('click', () => {
+        activeTab = key;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('formulaSearch').value = '';
+        renderFormulas();
+      });
+      tabsEl.appendChild(btn);
+    });
+
+    function renderFormulas(filter = '') {
+      const q = filter.trim().toLowerCase();
+      gridEl.innerHTML = '';
+      document.getElementById('searchEmpty').classList.remove('show');
+
+      if (q) {
+        document.getElementById('formulaTabs').style.display = 'none';
+        let count = 0;
+        Object.keys(formulas).forEach(cat => {
+          formulas[cat].items.forEach((f, i) => {
+            const text = `${f.name} ${f.expr} ${f.example} ${formulas[cat].label}`.toLowerCase();
+            if (!text.includes(q)) return;
+            count++;
+            const card = document.createElement('div');
+            card.className = 'formula-card';
+            card.style.animationDelay = `${i * 0.05}s`;
+            card.innerHTML = `
+              <span class="grade-badge" style="display:inline-block;background:var(--gradient-soft);color:var(--purple);font-size:.75rem;padding:.2rem .6rem;border-radius:999px;margin-bottom:.5rem">${formulas[cat].label}</span>
+              <h3>${f.name}</h3>
+              <div class="formula-expr">${f.expr}</div>
+              <div class="formula-example"><strong>ตัวอย่าง:</strong> ${f.example}</div>
+            `;
+            gridEl.appendChild(card);
+          });
+        });
+        if (count === 0) document.getElementById('searchEmpty').classList.add('show');
+        return;
+      }
+
+      document.getElementById('formulaTabs').style.display = 'flex';
+      formulas[activeTab].items.forEach((f, i) => {
+        const card = document.createElement('div');
+        card.className = 'formula-card';
+        card.style.animationDelay = `${i * 0.08}s`;
+        card.innerHTML = `
+          <h3>${f.name}</h3>
+          <div class="formula-expr">${f.expr}</div>
+          <div class="formula-example"><strong>ตัวอย่าง:</strong> ${f.example}</div>
+        `;
+        gridEl.appendChild(card);
+      });
+    }
+    renderFormulas();
+
+    document.getElementById('formulaSearch').addEventListener('input', (e) => {
+      renderFormulas(e.target.value);
+    });
+
+    /* ─── Grade Data ม.1-ม.6 ─── */
+    const gradeData = {
+      m1: {
+        label: 'ม.1', title: 'จำนวนและพีชคณิตเบื้องต้น',
+        desc: 'จำนวนเต็ม เลขยกกำลัง สมการเชิงเส้น และเรขาคณิตพื้นฐาน',
+        topics: ['จำนวนเต็ม', 'เลขยกกำลัง', 'สมการเชิงเส้น', 'เรขาคณิต', 'สถิติเบื้องต้น'],
+        formulas: [
+          { name: 'การบวกเลขจำนวนเต็ม', expr: 'a + (-b) = a - b', steps: ['ดูเครื่องหมายของตัวเลข', 'ถ้าเครื่องหมายต่างกัน → ลบค่าสัมบูรณ์ เอาเครื่องหมายของตัวที่ค่ามากกว่า', 'เช่น 5+(-3) = 5-3 = 2'] },
+          { name: 'เลขยกกำลัง', expr: 'aᵐ × aⁿ = aᵐ⁺ⁿ', steps: ['ฐานเดียวกัน → บวกเลขชี้กำลัง', 'เช่น 2³ × 2² = 2⁵ = 32', 'หาร → ลบเลขชี้กำลัง: 2⁵ ÷ 2² = 2³'] },
+          { name: 'สมการเชิงเส้น', expr: 'x + a = b → x = b - a', steps: ['ย้ายข้าง: เปลี่ยนเครื่องหมาย', 'x + 5 = 12 → x = 12 - 5 = 7', 'ตรวจ: 7+5=12 ✓'] },
+          { name: 'พื้นที่สี่เหลี่ยม', expr: 'A = กว้าง × ยาว', steps: ['วัดด้านที่ตั้งฉากกัน', 'คูณกว้าง × ยาว', 'เช่น 8×5 = 40 ตร.ซม.'] },
+          { name: 'ค่าเฉลี่ย', expr: 'ค่าเฉลี่ย = ผลรวม ÷ จำนวนข้อมูล', steps: ['บวกข้อมูลทั้งหมด', 'หารด้วยจำนวนข้อมูล', 'เช่น 10,20,30 → (60÷3)=20'] }
+        ],
+        exam: [
+          { q: '(-8) + 5 = ?', choices: ['-3', '3', '-13', '13'], answer: '-3', hint: 'ใช้กฎบวกเลขจำนวนเติม: 5+(-8) = 5-8 = -3' },
+          { q: '2³ × 2² = ?', choices: ['32', '16', '64', '8'], answer: '32', hint: 'ฐานเดียวกัน บวกเลขชี้กำลัง: 2⁵ = 32' },
+          { q: 'แก้สมการ x + 7 = 15', choices: ['x = 8', 'x = 22', 'x = 7', 'x = 105'], answer: 'x = 8', hint: 'x = 15 - 7 = 8' },
+          { q: 'สี่เหลี่ยมผืนผ้า กว้าง 6 ยาว 9 พื้นที่เท่าไร?', choices: ['54', '30', '15', '45'], answer: '54', hint: 'A = 6×9 = 54 ตร.หน่วย' },
+          { q: 'ค่าเฉลี่ยของ 4, 6, 8, 12 คือ?', choices: ['7.5', '8', '6', '10'], answer: '7.5', hint: '(4+6+8+12)÷4 = 30÷4 = 7.5' }
+        ]
+      },
+      m2: {
+        label: 'ม.2', title: 'พีชคณิตและเรขาคณิต',
+        desc: 'เลขชี้กำลัง พหุนาม อสมการ และทฤษฎีพีทากอรัส',
+        topics: ['เลขชี้กำลัง', 'พหุนาม', 'อสมการ', 'พีทากอรัส', 'ความน่าจะเป็น'],
+        formulas: [
+          { name: 'เลขชี้กำลังลบ', expr: 'a⁻ⁿ = 1/aⁿ', steps: ['เลขชี้กำลังลบ → พลิกเป็นเศษส่วน', '2⁻³ = 1/2³ = 1/8', '1/2⁻² = 2² = 4'] },
+          { name: 'การคูณพหุนาม', expr: '(a+b)(c+d) = ac+ad+bc+bd', steps: ['คูณทีละพจน์ (FOIL)', '(x+2)(x+3) = x²+3x+2x+6', '= x²+5x+6'] },
+          { name: 'อสมการเชิงเส้น', expr: 'ax + b > c → ax > c - b', steps: ['ย้ายข้างเหมือนสมการ', 'หารด้วยเลขติดลบ → กลับเครื่องหมาย', '2x-4>6 → 2x>10 → x>5'] },
+          { name: 'พีทากอรัส', expr: 'a² + b² = c²', steps: ['c = ด้านตรงมุมฉาก (ด้านที่ยาวที่สุด)', 'a=3, b=4 → c²=9+16=25', 'c = √25 = 5'] },
+          { name: 'ความน่าจะเป็น', expr: 'P(E) = จำนวนผลที่เอื้ออำนวย / จำนวนผลทั้งหมด', steps: ['นับผลลัพธ์ที่ต้องการ', 'หารด้วยผลทั้งหมด', 'ทอยลูกเต๋าได้ 6: P=1/6'] }
+        ],
+        exam: [
+          { q: '2⁻² = ?', choices: ['1/4', '4', '-4', '1/2'], answer: '1/4', hint: '2⁻² = 1/2² = 1/4' },
+          { q: '(x+1)(x+2) = ?', choices: ['x²+3x+2', 'x²+2x+1', 'x²+3x+3', '2x+3'], answer: 'x²+3x+2', hint: 'x²+2x+x+2 = x²+3x+2' },
+          { q: 'แก้อสมการ 3x - 6 ≥ 0', choices: ['x ≥ 2', 'x ≤ 2', 'x ≥ 6', 'x ≤ -2'], answer: 'x ≥ 2', hint: '3x≥6 → x≥2' },
+          { q: 'สามเหลี่ยมมุมฉาก ด้าน 5 และ 12 ด้านไฮโพเทนูสเท่าไร?', choices: ['13', '17', '7', '15'], answer: '13', hint: 'c²=25+144=169 → c=13' },
+          { q: 'ทอยเหรียญ 1 ครั้ง ได้หัว P = ?', choices: ['1/2', '1/4', '1', '2'], answer: '1/2', hint: 'P = 1/2' }
+        ]
+      },
+      m3: {
+        label: 'ม.3', title: 'สมการกำลังสองและฟังก์ชัน',
+        desc: 'แยกตัวประกอบ สมการกำลังสอง ฟังก์ชันกำลังสอง และเรขาคณิตวงกลม',
+        topics: ['แยกตัวประกอบ', 'สมการกำลังสอง', 'ฟังก์ชัน', 'วงกลม', 'สถิติ'],
+        formulas: [
+          { name: 'แยกตัวประกอบ', expr: 'x²+bx+c = (x+p)(x+q) เมื่อ p+q=b, pq=c', steps: ['หาเลข 2 ตัวที่คูณได้ c บวกได้ b', 'x²+5x+6 → (2)(3)=6, 2+3=5', '=(x+2)(x+3)'] },
+          { name: 'สูตรสมการกำลังสอง', expr: 'x = (-b ± √(b²-4ac)) / 2a', steps: ['ใส่ a,b,c จาก ax²+bx+c=0', 'คำนวณ b²-4ac (ดิสคริมิแนนต์)', 'แทนสูตรได้คำตอบ 2 ค่า'] },
+          { name: 'ฟังก์ชันกำลังสอง', expr: 'y = ax² + bx + c', steps: ['a>0 → ยอดหงายขึ้น, a<0 → ยอดหงายลง', 'แกนแนวตั้ง: x = -b/2a', 'แทน x หา y ได้จุดบนกราฟ'] },
+          { name: 'พื้นที่วงกลม', expr: 'A = πr²', steps: ['หารัศมี r', 'คูณ r×r แล้วคูณ π', 'r=5 → π×25 ≈ 78.54'] },
+          { name: 'ส่วนเบี่ยงเบนมาตรฐาน', expr: 'SD = √(Σ(x-x̄)²/n)', steps: ['หาค่าเฉลี่ย x̄', 'หาผลต่างยกกำลังสอง', 'หารด้วย n แล้วถอนราก'] }
+        ],
+        exam: [
+          { q: 'แยกตัวประกอบ x²+7x+12', choices: ['(x+3)(x+4)', '(x+2)(x+6)', '(x+1)(x+12)', '(x+5)(x+2)'], answer: '(x+3)(x+4)', hint: '3×4=12, 3+4=7' },
+          { q: 'x²-5x+6=0 แก้ x ได้', choices: ['2 และ 3', '-2 และ -3', '1 และ 6', '-1 และ -6'], answer: '2 และ 3', hint: '(x-2)(x-3)=0' },
+          { q: 'y=x²-4x+3 ยอดหงายขึ้นหรือลง?', choices: ['ขึ้น (a>0)', 'ลง (a<0)', 'เป็นเส้นตรง', 'ไม่มีกราฟ'], answer: 'ขึ้น (a>0)', hint: 'a=1>0 → ยอดหงายขึ้น' },
+          { q: 'วงกลม r=7 พื้นที่ ≈ ? (π≈3.14)', choices: ['153.86', '43.96', '49', '154'], answer: '153.86', hint: 'π×49 ≈ 153.86' },
+          { q: 'ข้อมูล 2,4,4,4,6 ค่าเฉลี่ยเท่าไร?', choices: ['4', '3.5', '4.5', '5'], answer: '4', hint: '20÷5=4' }
+        ]
+      },
+      m4: {
+        label: 'ม.4', title: 'ฟังก์ชันและตรีโกณมิติ',
+        desc: 'ฟังก์ชันต่างๆ สมการกำลังสอง ตรีโกณมิติ และลอการิทึม',
+        topics: ['ฟังก์ชัน', 'สมการกำลังสอง', 'ตรีโกณมิติ', 'ลอการิทึม', 'เซต'],
+        formulas: [
+          { name: 'ผลต่างกำลังสอง', expr: 'a²-b² = (a+b)(a-b)', steps: ['แยกเป็น 2 วงเล็บ', 'x²-9 = (x+3)(x-3)', 'ใช้แก้สมการหรือคูณเร็ว'] },
+          { name: 'sin, cos, tan', expr: 'sinθ=opp/hyp, cosθ=adj/hyp, tanθ=opp/adj', steps: ['ระบุด้านตรงข้าม ประชิด ไฮโพเทนูส', 'sin30°=1/2, cos60°=1/2', 'tan45°=1'] },
+          { name: 'กฎลอการิทึม', expr: 'log(ab)=log a+log b', steps: ['คูณ → บวกลอการิทึม', 'หาร → ลบลอการิทึม', 'log 100 = 2 (เพราะ 10²=100)'] },
+          { name: 'เลขชี้กำลังเศษส่วน', expr: 'a^(m/n) = ⁿ√(aᵐ)', steps: ['ยกกำลังก่อน แล้วถอนราก', '8^(2/3) = ∛64 = 4', 'หรือ ∛8=2 แล้ว 2²=4'] },
+          { name: 'การเติมสี่เหลี่ยม', expr: 'x²+bx = (x+b/2)² - (b/2)²', steps: ['หาร b ด้วย 2 แล้วยกกำลังสอง', 'x²+6x → (x+3)²-9', 'ใช้หาจุดยอด parabola'] }
+        ],
+        exam: [
+          { q: 'x²-16 = 0 แก้ x ได้', choices: ['4 และ -4', '8 และ -8', '2 และ -2', '16 และ -16'], answer: '4 และ -4', hint: 'x²=16 → x=±4' },
+          { q: 'sin 30° = ?', choices: ['1/2', '√3/2', '1', '0'], answer: '1/2', hint: 'sin30° = 1/2' },
+          { q: 'log₁₀ 1000 = ?', choices: ['3', '2', '10', '100'], answer: '3', hint: '10³=1000' },
+          { q: '27^(1/3) = ?', choices: ['3', '9', '81', '1/3'], answer: '3', hint: '∛27 = 3' },
+          { q: 'tan 45° = ?', choices: ['1', '0', '√3', '1/2'], answer: '1', hint: 'tan45° = 1' }
+        ]
+      },
+      m5: {
+        label: 'ม.5', title: 'ลำดับ ความน่าจะเป็น และตรีโกณมิติ',
+        desc: 'ลำดับและอนุกรม ความน่าจะเป็นขั้นสูง ตรีโกณมิติ และเมทริกซ์เบื้องต้น',
+        topics: ['ลำดับอนุกรม', 'ความน่าจะเป็น', 'ตรีโกณมิติ', 'เมทริกซ์', 'กราฟฟังก์ชัน'],
+        formulas: [
+          { name: 'ลำดับเลขคณิต', expr: 'aₙ = a₁+(n-1)d', steps: ['หา d = a₂-a₁', 'แทน n หาพจน์ที่ n', 'a₁=3,d=4 → a₁₀=3+36=39'] },
+          { name: 'ลำดับเรขาคณิต', expr: 'aₙ = a₁×rⁿ⁻¹', steps: ['หา r = a₂÷a₁', 'แทน n หาพจน์', 'a₁=2,r=3 → a₄=2×27=54'] },
+          { name: 'sin(A+B)', expr: 'sin(A+B)=sinAcosB+cosAsinB', steps: ['แยกมุมเป็นผลบวก', 'แทนค่า sin,cos ของแต่ละมุม', 'sin75°=sin(45°+30°)'] },
+          { name: 'ค่าผสมก nCr', expr: 'nCr = n! / (r!(n-r)!)', steps: ['n = จำนวนทั้งหมด, r = เลือก', '5C2 = 5!/(2!×3!) = 10', 'ใช้นับจำนวนวิธีเลือก'] },
+          { name: 'กฎไซน์', expr: 'a/sinA = b/sinB = 2R', steps: ['ใช้กับสามเหลี่ยมใดๆ', 'รู้ 2 มุม 1 ด้าน → หาด้านที่เหลือ', 'R = รัศมีวงล้อม'] }
+        ],
+        exam: [
+          { q: 'ลำดับ 5,8,11,14... d เท่าไร?', choices: ['3', '5', '8', '14'], answer: '3', hint: 'd = 8-5 = 3' },
+          { q: 'a₁=2, d=5 หา a₆', choices: ['27', '32', '22', '30'], answer: '27', hint: '2+(5×5)=27' },
+          { q: '2,6,18,54... r เท่าไร?', choices: ['3', '2', '6', '4'], answer: '3', hint: '6÷2=3' },
+          { q: '5C2 = ?', choices: ['10', '20', '5', '15'], answer: '10', hint: '5!/(2!×3!)=10' },
+          { q: 'sin²θ+cos²θ = ?', choices: ['1', '0', '2', 'sin2θ'], answer: '1', hint: 'อัตลักษณ์พื้นฐาน sin²+cos²=1' }
+        ]
+      },
+      m6: {
+        label: 'ม.6', title: 'แคลคูลัสและสถิติขั้นสูง',
+        desc: 'อนุพันธ์ อินทิกรัล ฟังก์ชันเอกซ์โพเนนน์เชียล และสถิติ',
+        topics: ['อนุพันธ์', 'อินทิกรัล', 'ฟังก์ชัน', 'สถิติ', 'ความน่าจะเป็น'],
+        formulas: [
+          { name: 'อนุพันธ์กำลัง', expr: 'd/dx(xⁿ) = nxⁿ⁻¹', steps: ['เอาเลขชี้กำลังมาคูนข้างหน้า', 'ลดเลขชี้กำลังลง 1', 'd/dx(x⁴)=4x³'] },
+          { name: 'อินทิกรัลกำลัง', expr: '∫xⁿdx = xⁿ⁺¹/(n+1)+C', steps: ['บวกเลขชี้กำลัง 1', 'หารด้วยเลขชี้กำลังใหม่', '∫x²dx = x³/3+C'] },
+          { name: 'อนุพันธ์ sin/cos', expr: 'd/dx(sinx)=cosx, d/dx(cosx)=-sinx', steps: ['sin → cos', 'cos → -sin', 'd/dx(sin2x)=2cos2x (ลูกโซ่)'] },
+          { name: 'eˣ และ ln', expr: 'd/dx(eˣ)=eˣ, d/dx(lnx)=1/x', steps: ['อนุพันธ์ eˣ คือตัวเอง', 'lnx → 1/x', '∫(1/x)dx = ln|x|+C'] },
+          { name: 'สูตรความน่าจะเป็นเงื่อนไข', expr: 'P(A|B) = P(A∩B)/P(B)', steps: ['P(A|B) = ความน่าจะเป็น A เมื่อเกิด B', 'หา P(A∩B) และ P(B)', 'ใช้กับปัญหาแบ่งกลุ่ม'] }
+        ],
+        exam: [
+          { q: 'd/dx(x³) = ?', choices: ['3x²', 'x²', '3x³', 'x³/3'], answer: '3x²', hint: 'nxⁿ⁻¹ = 3x²' },
+          { q: '∫2x dx = ?', choices: ['x²+C', '2x²+C', 'x+C', '2+C'], answer: 'x²+C', hint: '∫2x dx = x²+C' },
+          { q: 'd/dx(cosx) = ?', choices: ['-sinx', 'sinx', 'cosx', '-cosx'], answer: '-sinx', hint: 'อนุพันธ์ cos คือ -sin' },
+          { q: 'd/dx(eˣ) = ?', choices: ['eˣ', 'xeˣ⁻¹', 'lnx', '1'], answer: 'eˣ', hint: 'อนุพันธ์ eˣ คือ eˣ' },
+          { q: 'lim(x→0) sinx/x = ?', choices: ['1', '0', '∞', 'ไม่มี'], answer: '1', hint: 'ลิมิตสำคัญ sinx/x → 1' }
+        ]
+      }
+    };
+
+    /* ─── Render Grades ─── */
+    let activeGrade = 'm1';
+    const gradeTabsEl = document.getElementById('gradeTabs');
+    const gradePanelsEl = document.getElementById('gradePanels');
+
+    Object.keys(gradeData).forEach((key, i) => {
+      const g = gradeData[key];
+      const tab = document.createElement('button');
+      tab.className = 'grade-tab' + (i === 0 ? ' active' : '');
+      tab.textContent = g.label;
+      tab.dataset.grade = key;
+      tab.addEventListener('click', () => {
+        activeGrade = key;
+        document.querySelectorAll('.grade-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.grade-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('panel-' + key).classList.add('active');
+      });
+      gradeTabsEl.appendChild(tab);
+
+      const panel = document.createElement('div');
+      panel.className = 'grade-panel' + (i === 0 ? ' active' : '');
+      panel.id = 'panel-' + key;
+
+      const topicsHtml = g.topics.map(t => `<span class="topic-chip">${t}</span>`).join('');
+      const formulasHtml = g.formulas.map(f => `
+        <div class="grade-formula-card">
+          <span class="grade-badge">${g.label}</span>
+          <h4>${f.name}</h4>
+          <div class="formula-expr">${f.expr}</div>
+          <div class="technique-steps">
+            <div class="tech-label">⚡ เทคนิคใช้สูตร</div>
+            <ol>${f.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+          </div>
+        </div>
+      `).join('');
+
+      panel.innerHTML = `
+        <div class="grade-header">
+          <h3>${g.label} — ${g.title}</h3>
+          <p>${g.desc}</p>
+          <div class="topic-chips">${topicsHtml}</div>
+        </div>
+        <div class="grade-subtitle">📐 สูตร & เทคนิค</div>
+        <div class="grade-formula-grid">${formulasHtml}</div>
+        <div class="grade-subtitle">📝 แบบทดสอบ ${g.label}</div>
+        <div class="grade-exam-wrap" id="exam-wrap-${key}">
+          <div class="grade-exam-start" id="exam-start-${key}">
+            <p class="exam-intro">ข้อสอบ ${g.label} จำนวน 5 ข้อ — มีเฉลยและเทคนิคใช้สูตรทันที</p>
+            <button class="btn btn-gradient exam-start-btn" data-grade="${key}">▶️ เริ่มทำข้อสอบ ${g.label}</button>
+          </div>
+          <div class="grade-exam-game" id="exam-game-${key}">
+            <div class="quiz-header">
+              <div class="quiz-stat">${g.label} ข้อ <span class="exam-num">1</span>/5</div>
+              <div class="quiz-stat">คะแนน <span class="exam-score">0</span></div>
+            </div>
+            <div class="quiz-progress"><div class="quiz-progress-bar exam-progress" style="width:0%"></div></div>
+            <div class="quiz-question exam-q"></div>
+            <div class="quiz-options exam-opts"></div>
+            <div class="quiz-feedback exam-fb"></div>
+            <div class="exam-hint" style="display:none"></div>
+            <button class="btn btn-gradient exam-next" style="display:none">ข้อถัดไป →</button>
+          </div>
+          <div class="grade-exam-result" id="exam-result-${key}">
+            <div class="result-score exam-final-score">0/5</div>
+            <div class="result-detail exam-final-detail"></div>
+            <button class="btn btn-gradient exam-restart" data-grade="${key}">🔄 ทำใหม่</button>
+          </div>
+        </div>
+      `;
+      gradePanelsEl.appendChild(panel);
+    });
+
+    /* ─── Grade Exam Engine ─── */
+    const examState = {};
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function startGradeExam(gradeKey) {
+      const g = gradeData[gradeKey];
+      examState[gradeKey] = {
+        questions: shuffle(g.exam),
+        current: 0, score: 0, answered: false
+      };
+      document.getElementById('exam-start-' + gradeKey).style.display = 'none';
+      document.getElementById('exam-result-' + gradeKey).classList.remove('show');
+      document.getElementById('exam-game-' + gradeKey).classList.add('active');
+      showGradeExamQ(gradeKey);
+    }
+
+    function showGradeExamQ(gradeKey) {
+      const st = examState[gradeKey];
+      const q = st.questions[st.current];
+      const wrap = document.getElementById('exam-game-' + gradeKey);
+      st.answered = false;
+
+      wrap.querySelector('.exam-num').textContent = st.current + 1;
+      wrap.querySelector('.exam-score').textContent = st.score;
+      wrap.querySelector('.exam-progress').style.width = `${(st.current / 5) * 100}%`;
+      wrap.querySelector('.exam-q').textContent = q.q;
+      wrap.querySelector('.exam-fb').textContent = '';
+      wrap.querySelector('.exam-fb').className = 'quiz-feedback exam-fb';
+      wrap.querySelector('.exam-hint').style.display = 'none';
+      wrap.querySelector('.exam-next').style.display = 'none';
+
+      const optsEl = wrap.querySelector('.exam-opts');
+      optsEl.innerHTML = '';
+      q.choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.textContent = choice;
+        btn.addEventListener('click', () => answerGradeExam(gradeKey, btn, choice, q));
+        optsEl.appendChild(btn);
+      });
+    }
+
+    function answerGradeExam(gradeKey, btn, choice, q) {
+      const st = examState[gradeKey];
+      if (st.answered) return;
+      st.answered = true;
+      const correct = choice === q.answer;
+      if (correct) st.score++;
+
+      const wrap = document.getElementById('exam-game-' + gradeKey);
+      wrap.querySelectorAll('.quiz-option').forEach(b => {
+        b.disabled = true;
+        if (b.textContent === q.answer) b.classList.add('correct');
+        else if (b === btn && !correct) b.classList.add('wrong');
+      });
+
+      const fb = wrap.querySelector('.exam-fb');
+      fb.className = 'quiz-feedback exam-fb ' + (correct ? 'correct' : 'wrong');
+      fb.textContent = correct ? '✅ ถูกต้อง!' : `❌ ผิด! คำตอบคือ ${q.answer}`;
+
+      const hint = wrap.querySelector('.exam-hint');
+      hint.innerHTML = `<strong>💡 เทคนิค:</strong> ${q.hint}`;
+      hint.style.display = 'block';
+      wrap.querySelector('.exam-score').textContent = st.score;
+
+      if (st.current < 4) {
+        wrap.querySelector('.exam-next').style.display = 'inline-block';
+      } else {
+        setTimeout(() => showGradeExamResult(gradeKey), 1500);
+      }
+    }
+
+    function showGradeExamResult(gradeKey) {
+      const st = examState[gradeKey];
+      const g = gradeData[gradeKey];
+      document.getElementById('exam-game-' + gradeKey).classList.remove('active');
+      const result = document.getElementById('exam-result-' + gradeKey);
+      result.classList.add('show');
+
+      const pct = Math.round((st.score / 5) * 100);
+      let msg = pct === 100 ? '🏆 สมบูรณ์แบบ!' : pct >= 60 ? '👍 ผ่านเกณฑ์!' : '📚 ทบทวนสูตรแล้วลองใหม่';
+      result.querySelector('.exam-final-score').textContent = `${st.score}/5`;
+      result.querySelector('.exam-final-detail').textContent =
+        `${g.label}: ${msg} (${pct}%) — กลับไปดูเทคนิคใช้สูตรด้านบนได้เลย`;
+    }
+
+    function resetGradeExam(gradeKey) {
+      document.getElementById('exam-start-' + gradeKey).style.display = 'block';
+      document.getElementById('exam-game-' + gradeKey).classList.remove('active');
+      document.getElementById('exam-result-' + gradeKey).classList.remove('show');
+    }
+
+    document.querySelectorAll('.exam-start-btn').forEach(btn => {
+      btn.addEventListener('click', () => startGradeExam(btn.dataset.grade));
+    });
+    document.querySelectorAll('.exam-restart').forEach(btn => {
+      btn.addEventListener('click', () => { resetGradeExam(btn.dataset.grade); startGradeExam(btn.dataset.grade); });
+    });
+    document.querySelectorAll('.exam-next').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const gradeKey = this.closest('.grade-exam-wrap').id.replace('exam-wrap-', '');
+        examState[gradeKey].current++;
+        showGradeExamQ(gradeKey);
+      });
+    });
+
+    /* ─── Navbar ─── */
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    document.getElementById('menuToggle').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('open');
+    });
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open'));
+    });
+
+    /* ─── Quiz Engine ─── */
+    const TOTAL = 10;
+    let questions = [], current = 0, score = 0, timerInterval = null, seconds = 0, answered = false;
+    let quizMode = 'grade';
+    let selectedQuizGrade = 'm1';
+
+    const ops = [
+      { sym: '+', fn: (a, b) => a + b },
+      { sym: '-', fn: (a, b) => a - b },
+      { sym: '×', fn: (a, b) => a * b },
+      { sym: '÷', fn: (a, b) => a / b }
+    ];
+
+    function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+    const quizGradeSelect = document.getElementById('quizGradeSelect');
+    Object.keys(gradeData).forEach((key, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'grade-select-btn' + (i === 0 ? ' active' : '');
+      btn.textContent = gradeData[key].label;
+      btn.dataset.grade = key;
+      btn.addEventListener('click', () => {
+        selectedQuizGrade = key;
+        document.querySelectorAll('.grade-select-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+      quizGradeSelect.appendChild(btn);
+    });
+
+    function generateSpeedQuestion() {
+      const op = ops[randInt(0, 3)];
+      let a, b, answer;
+      if (op.sym === '+') { a = randInt(1, 99); b = randInt(1, 99); answer = a + b; }
+      else if (op.sym === '-') { a = randInt(10, 99); b = randInt(1, a); answer = a - b; }
+      else if (op.sym === '×') { a = randInt(2, 12); b = randInt(2, 12); answer = a * b; }
+      else { b = randInt(2, 12); answer = randInt(2, 12); a = b * answer; }
+
+      const wrong = new Set();
+      while (wrong.size < 3) {
+        let w = answer + randInt(-10, 10);
+        if (w !== answer && w >= 0) wrong.add(w);
+      }
+      const choices = [...wrong, answer].sort(() => Math.random() - 0.5);
+      return { text: `${a} ${op.sym} ${b} = ?`, answer, choices, hint: null };
+    }
+
+    function generateQuiz() {
+      questions = [];
+      if (quizMode === 'speed') {
+        for (let i = 0; i < TOTAL; i++) questions.push(generateSpeedQuestion());
+      } else {
+        const pool = shuffle(gradeData[selectedQuizGrade].exam);
+        const extra = [];
+        Object.keys(gradeData).forEach(k => {
+          if (k !== selectedQuizGrade) extra.push(...gradeData[k].exam);
+        });
+        const combined = [...pool, ...shuffle(extra)];
+        for (let i = 0; i < TOTAL && i < combined.length; i++) {
+          const q = combined[i];
+          questions.push({
+            text: q.q,
+            answer: q.answer,
+            choices: shuffle(q.choices),
+            hint: q.hint
+          });
+        }
+        while (questions.length < TOTAL) {
+          questions.push(generateSpeedQuestion());
+        }
+      }
+    }
+
+    function formatTime(s) {
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      return `${m}:${sec.toString().padStart(2, '0')}`;
+    }
+
+    function startTimer() {
+      seconds = 0;
+      document.getElementById('qTimer').textContent = '0:00';
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        seconds++;
+        document.getElementById('qTimer').textContent = formatTime(seconds);
+      }, 1000);
+    }
+
+    function showQuestion() {
+      answered = false;
+      const q = questions[current];
+      document.getElementById('qNum').textContent = current + 1;
+      document.getElementById('qScore').textContent = score;
+      document.getElementById('qProgress').style.width = `${(current / TOTAL) * 100}%`;
+      document.getElementById('qText').textContent = q.text;
+      document.getElementById('qFeedback').textContent = '';
+      document.getElementById('qFeedback').className = 'quiz-feedback';
+      document.getElementById('nextBtn').style.display = 'none';
+
+      let hintEl = document.getElementById('quizHint');
+      if (!hintEl) {
+        hintEl = document.createElement('div');
+        hintEl.id = 'quizHint';
+        hintEl.className = 'exam-hint';
+        hintEl.style.display = 'none';
+        document.getElementById('qFeedback').after(hintEl);
+      }
+      hintEl.style.display = 'none';
+
+      const optsEl = document.getElementById('qOptions');
+      optsEl.innerHTML = '';
+      q.choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.textContent = choice;
+        btn.addEventListener('click', () => selectAnswer(btn, choice, q.answer, q.hint));
+        optsEl.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(btn, choice, answer, hint) {
+      if (answered) return;
+      answered = true;
+      const isCorrect = choice === answer;
+      if (isCorrect) score++;
+
+      document.querySelectorAll('#qOptions .quiz-option').forEach(b => {
+        b.disabled = true;
+        if (b.textContent === String(answer)) b.classList.add('correct');
+        else if (b === btn && !isCorrect) b.classList.add('wrong');
+      });
+
+      const fb = document.getElementById('qFeedback');
+      fb.className = 'quiz-feedback ' + (isCorrect ? 'correct' : 'wrong');
+      fb.textContent = isCorrect ? '✅ ถูกต้อง!' : `❌ ผิด! คำตอบคือ ${answer}`;
+
+      const hintEl = document.getElementById('quizHint');
+      if (hint && hintEl) {
+        hintEl.innerHTML = `<strong>💡 เทคนิค:</strong> ${hint}`;
+        hintEl.style.display = 'block';
+      }
+
+      document.getElementById('qScore').textContent = score;
+
+      if (current < TOTAL - 1) {
+        document.getElementById('nextBtn').style.display = 'inline-block';
+      } else {
+        setTimeout(showResult, 1200);
+      }
+    }
+
+    function showResult() {
+      clearInterval(timerInterval);
+      document.getElementById('quizGame').classList.remove('active');
+      document.getElementById('quizResult').classList.add('show');
+
+      const pct = Math.round((score / TOTAL) * 100);
+      let msg = '';
+      if (pct === 100) msg = '🏆 ยอดเยี่ยม! ตอบถูกทุกข้อ';
+      else if (pct >= 70) msg = '👏 เก่งมาก! เกือบครบแล้ว';
+      else if (pct >= 50) msg = '💪 พอใช้ได้ ลองอีกครั้งนะ';
+      else msg = '📖 อย่าท้อ ลองเล่นใหม่อีกรอบ';
+
+      const modeLabel = quizMode === 'speed' ? 'เกมคำนวณเร็ว' : `ข้อสอบ ${gradeData[selectedQuizGrade].label}`;
+      document.getElementById('resultScore').textContent = `${score}/${TOTAL}`;
+      document.getElementById('resultDetail').textContent =
+        `${modeLabel}: ${msg} — ใช้เวลา ${formatTime(seconds)} (${pct}%)`;
+    }
+
+    function startQuiz() {
+      quizMode = 'grade';
+      generateQuiz();
+      current = 0;
+      score = 0;
+      answered = false;
+      document.getElementById('quizStart').style.display = 'none';
+      document.getElementById('quizResult').classList.remove('show');
+      document.getElementById('quizGame').classList.add('active');
+      startTimer();
+      showQuestion();
+    }
+
+    function startSpeedQuiz() {
+      quizMode = 'speed';
+      generateQuiz();
+      current = 0;
+      score = 0;
+      answered = false;
+      document.getElementById('quizStart').style.display = 'none';
+      document.getElementById('quizResult').classList.remove('show');
+      document.getElementById('quizGame').classList.add('active');
+      startTimer();
+      showQuestion();
+    }
+
+    function restartQuiz() {
+      document.getElementById('quizResult').classList.remove('show');
+      document.getElementById('quizStart').style.display = 'block';
+      document.getElementById('quizGame').classList.remove('active');
+    }
+
+    document.getElementById('startQuizBtn').addEventListener('click', startQuiz);
+    document.getElementById('startSpeedBtn').addEventListener('click', startSpeedQuiz);
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      restartQuiz();
+      quizMode === 'speed' ? startSpeedQuiz() : startQuiz();
+    });
+    document.getElementById('nextBtn').addEventListener('click', () => { current++; showQuestion(); });
+
+    /* ─── Share ─── */
+    const pageUrl = window.location.href;
+    const shareText = encodeURIComponent('📐 MathHub — เรียนคณิตศาสตร์สนุกๆ');
+    const encodedUrl = encodeURIComponent(pageUrl);
+
+    document.getElementById('shareUrl').value = pageUrl;
+    document.getElementById('shareFb').href =
+      `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+    document.getElementById('shareLine').href =
+      `https://social-plugins.line.me/lineit/share?url=${encodedUrl}`;
+    document.getElementById('shareTw').href =
+      `https://twitter.com/intent/tweet?text=${shareText}&url=${encodedUrl}`;
+
+    document.getElementById('copyUrl').addEventListener('click', () => {
+      navigator.clipboard.writeText(pageUrl).then(() => {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+      }).catch(() => {
+        document.getElementById('shareUrl').select();
+        document.execCommand('copy');
+        document.getElementById('toast').classList.add('show');
+        setTimeout(() => document.getElementById('toast').classList.remove('show'), 2500);
+      });
+    });
+
+    /* ─── Dark Mode ─── */
+    const themeToggle = document.getElementById('themeToggle');
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('mathhub-theme', theme);
+    }
+    applyTheme(localStorage.getItem('mathhub-theme') || 'light');
+    themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    });
+
+    /* ─── Scroll Animation ─── */
+    const fadeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          fadeObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.fade-section').forEach(el => fadeObserver.observe(el));
+
+    /* ─── Speed Math 60s ─── */
+    let speedTimeLeft = 60, speedScore = 0, speedTimer = null, speedAnswered = false;
+
+    function renderLeaderboard() {
+      const list = JSON.parse(localStorage.getItem('mathhub-leaderboard') || '[]');
+      const ol = document.getElementById('leaderboardList');
+      if (!list.length) {
+        ol.innerHTML = '<li>ยังไม่มีสถิติ — ลองเล่นเลย!</li>';
+        return;
+      }
+      ol.innerHTML = list.slice(0, 5).map((e, i) =>
+        `<li>${i + 1}. ${e.name} — ${e.score} ข้อ (${e.date})</li>`
+      ).join('');
+    }
+    renderLeaderboard();
+
+    function showSpeedQuestion() {
+      speedAnswered = false;
+      const q = generateSpeedQuestion();
+      document.getElementById('speedQ').textContent = q.text;
+      const optsEl = document.getElementById('speedOpts');
+      optsEl.innerHTML = '';
+      q.choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.textContent = choice;
+        btn.addEventListener('click', () => {
+          if (speedAnswered) return;
+          speedAnswered = true;
+          if (String(choice) === String(q.answer)) {
+            speedScore++;
+            document.getElementById('speedScore').textContent = speedScore;
+          }
+          setTimeout(showSpeedQuestion, 200);
+        });
+        optsEl.appendChild(btn);
+      });
+    }
+
+    function endSpeedMath() {
+      clearInterval(speedTimer);
+      document.getElementById('speedGame').style.display = 'none';
+      document.getElementById('speedResult').style.display = 'block';
+      document.getElementById('speedFinal').textContent = speedScore + ' ข้อ';
+      document.getElementById('speedDetail').textContent =
+        speedScore >= 20 ? '🏆 สุดยอด! เร็วและแม่นมาก' :
+        speedScore >= 10 ? '👏 เก่งมาก! ลองทำลายสถิติดู' :
+        '💪 ฝึกต่อไป ยิ่งเล่นยิ่งเก่ง!';
+    }
+
+    function startSpeedMath() {
+      speedTimeLeft = 60;
+      speedScore = 0;
+      speedAnswered = false;
+      document.getElementById('speedStart').style.display = 'none';
+      document.getElementById('speedResult').style.display = 'none';
+      document.getElementById('speedGame').style.display = 'block';
+      document.getElementById('speedScore').textContent = '0';
+      document.getElementById('speedCountdown').textContent = '60';
+      document.getElementById('speedCountdown').classList.remove('urgent');
+      document.getElementById('speedName').value = localStorage.getItem('mathhub-name') || '';
+      showSpeedQuestion();
+      clearInterval(speedTimer);
+      speedTimer = setInterval(() => {
+        speedTimeLeft--;
+        const el = document.getElementById('speedCountdown');
+        el.textContent = speedTimeLeft;
+        if (speedTimeLeft <= 10) el.classList.add('urgent');
+        if (speedTimeLeft <= 0) endSpeedMath();
+      }, 1000);
+    }
+
+    document.getElementById('speedStartBtn').addEventListener('click', startSpeedMath);
+    document.getElementById('speedRetryBtn').addEventListener('click', startSpeedMath);
+    document.getElementById('speedSaveBtn').addEventListener('click', () => {
+      const name = document.getElementById('speedName').value.trim() || 'ผู้เล่น';
+      localStorage.setItem('mathhub-name', name);
+      const list = JSON.parse(localStorage.getItem('mathhub-leaderboard') || '[]');
+      const now = new Date();
+      const date = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+      list.push({ name, score: speedScore, date });
+      list.sort((a, b) => b.score - a.score);
+      localStorage.setItem('mathhub-leaderboard', JSON.stringify(list.slice(0, 10)));
+      renderLeaderboard();
+      document.getElementById('speedStart').style.display = 'block';
+      document.getElementById('speedResult').style.display = 'none';
+      const toast = document.getElementById('toast');
+      toast.textContent = 'บันทึกสถิติแล้ว!';
+      toast.classList.add('show');
+      setTimeout(() => { toast.classList.remove('show'); toast.textContent = 'คัดลอก URL แล้ว!'; }, 2500);
+    });
+
+    /* ─── Calculator ─── */
+    let calcExpr = '0';
+    const calcDisplay = document.getElementById('calcDisplay');
+    const calcButtons = [
+      ['C', '⌫', '(', ')'],
+      ['7', '8', '9', '/'],
+      ['4', '5', '6', '*'],
+      ['1', '2', '3', '-'],
+      ['0', '.', '^', '+'],
+      ['sin', 'cos', 'tan', 'log'],
+      ['√', 'π', '⌫', '=']
+    ];
+
+    function updateCalcDisplay() { calcDisplay.textContent = calcExpr || '0'; }
+
+    function calcInput(val) {
+      if (val === 'C') { calcExpr = '0'; updateCalcDisplay(); return; }
+      if (val === '⌫') {
+        calcExpr = calcExpr.length <= 1 ? '0' : calcExpr.slice(0, -1);
+        updateCalcDisplay(); return;
+      }
+      if (val === '=') { calcEvaluate(); return; }
+      if (calcExpr === '0' && val !== '.') calcExpr = '';
+      if (['sin','cos','tan','log','√'].includes(val)) calcExpr += val + '(';
+      else if (val === 'π') calcExpr += 'π';
+      else calcExpr += val;
+      updateCalcDisplay();
+    }
+
+    function calcEvaluate() {
+      try {
+        let e = calcExpr
+          .replace(/π/g, String(Math.PI))
+          .replace(/√\(/g, 'Math.sqrt(')
+          .replace(/sin\(/g, 'SIN(')
+          .replace(/cos\(/g, 'COS(')
+          .replace(/tan\(/g, 'TAN(')
+          .replace(/log\(/g, 'Math.log10(')
+          .replace(/\^/g, '**');
+        e = e.replace(/SIN\(([^)]+)\)/g, (_, x) => `Math.sin((${x})*Math.PI/180)`);
+        e = e.replace(/COS\(([^)]+)\)/g, (_, x) => `Math.cos((${x})*Math.PI/180)`);
+        e = e.replace(/TAN\(([^)]+)\)/g, (_, x) => `Math.tan((${x})*Math.PI/180)`);
+        const result = Function('"use strict"; return (' + e + ')')();
+        if (typeof result !== 'number' || !isFinite(result)) throw new Error('invalid');
+        calcExpr = String(Math.round(result * 1e10) / 1e10);
+        updateCalcDisplay();
+      } catch {
+        calcExpr = 'Error';
+        updateCalcDisplay();
+        setTimeout(() => { calcExpr = '0'; updateCalcDisplay(); }, 1500);
+      }
+    }
+
+    const calcGrid = document.getElementById('calcGrid');
+    calcButtons.flat().forEach(val => {
+      const btn = document.createElement('button');
+      btn.className = 'calc-btn';
+      btn.textContent = val;
+      if (['+','-','*','/','^'].includes(val)) btn.classList.add('op');
+      else if (['sin','cos','tan','log','√','π'].includes(val)) btn.classList.add('fn');
+      else if (val === 'C' || val === '⌫') btn.classList.add('clear');
+      else if (val === '=') btn.classList.add('eq');
+      btn.addEventListener('click', () => calcInput(val));
+      calcGrid.appendChild(btn);
+    });
+  </script>
+</body>
+</html>
